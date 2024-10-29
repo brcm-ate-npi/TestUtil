@@ -6,15 +6,36 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Xml;
 
 namespace TesterUtil
 {
-    // Token: 0x02000002 RID: 2
     public partial class Form1 : Form
     {
-        // Token: 0x06000001 RID: 1 RVA: 0x00002050 File Offset: 0x00000250
+        private bool IsRun { get; set; } = false;
+        private string LastClothoFile = "C:\\Avago.ATF.Common.x64\\LastClothoFile.init";
+        private string Clotho_Path = "C:\\Avago.ATF.4.0.0\\System\\Avago.ATF.UIs.exe";
+        private string LatestInstalledClotho = "";
+        private int LatestClotho = 0;
+        private int ReadCurrentClotho = 0;
+        private string[] ChosenClotho = new string[] { "", "", "", "", "", "", "" };
+        private string ResultDir = @"C:\Avago.ATF.Common\Results\";
+        private string BackupDir = @"C:\Avago.ATF.Common\Results.Backup\";
+        private string CloseLotFailWarning = @"C:\Avago.ATF.Common.x64\CloseLotFailWarning.exe";
+        private string TesterIPAddress = "1.1.1.1";
+        private string TesterID = "Default";
+        private string Tester_Usage = "Default";
+        private string LocalFilePath = @"C:\Avago.ATF.Common.x64\00_TesterUtil\";
+        private string LocalNiMaxReport = @"C:\Avago.ATF.Common.x64\00_NI-MAX_Report\";
+        private string NiMaxReportFileName = "_NiMaxReport.html";
+        private DateTime StartTime = DateTime.Now;
+        private DateTime StopTime = DateTime.Now;
+        private string Write2File = "";
+        private int count = 0;
+        private string ip_addr = "NA";
+
         public Form1()
         {
             this.InitializeComponent();
@@ -33,9 +54,14 @@ namespace TesterUtil
             this.Clotho_Path = this.CheckLastClotho();
             this.Display_Clotho_Version();
             this.MoveDir(this.ResultDir, this.BackupDir);
+
+            Application.ApplicationExit += (s, e) =>
+            {
+                if (IsRun)
+                    this.KillExternalProgram(this.Clotho_Path, this.CloseLotFailWarning);
+            };
         }
 
-        // Token: 0x06000002 RID: 2 RVA: 0x000021E8 File Offset: 0x000003E8
         private void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e)
         {
             BackgroundWorker backgroundWorker = sender as BackgroundWorker;
@@ -61,9 +87,11 @@ namespace TesterUtil
             RunClotho("NPI");
         }
 
-        private void RunClotho(string tester_usage)
+        private async void RunClotho(string tester_usage)
         {
-            this.Tester_Usage = "QA";
+            if (IsRun) return;
+
+            this.Tester_Usage = tester_usage;
             File.WriteAllText(this.LastClothoFile, this.Clotho_Path);
             this.MoveDir(this.ResultDir, this.BackupDir);
             string directoryName = Path.GetDirectoryName(this.Clotho_Path);
@@ -73,23 +101,19 @@ namespace TesterUtil
             this.lbl_ipaddr.Text = "Tester IP Address = " + this.ip_addr.ToString();
             this.lbl_ipaddr.BackColor = Color.LightBlue;
 
-            Application.DoEvents();
-
-            this.LaunchExternalProgram(this.Clotho_Path);
+            await this.LaunchExternalProgram(this.Clotho_Path);
             base.TopMost = false;
             this.Util_Logger();
             this.KillExternalProgram(this.Clotho_Path, this.CloseLotFailWarning);
             base.WindowState = FormWindowState.Normal;
         }
 
-        // Token: 0x06000007 RID: 7 RVA: 0x00002399 File Offset: 0x00000599
         private void btn_PM_Click(object sender, EventArgs e)
         {
             MessageBox.Show("Coming Soon... ");
             this.Tester_Usage = "PM";
         }
 
-        // Token: 0x06000008 RID: 8 RVA: 0x000023B4 File Offset: 0x000005B4
         private void Util_Logger()
         {
             bool flag = false;
@@ -239,7 +263,6 @@ namespace TesterUtil
             }
         }
 
-        // Token: 0x06000009 RID: 9 RVA: 0x000028C4 File Offset: 0x00000AC4
         private string Auto_IpAddr_Update()
         {
             bool flag = true;
@@ -314,7 +337,6 @@ namespace TesterUtil
             return result;
         }
 
-        // Token: 0x0600000A RID: 10 RVA: 0x00002ADC File Offset: 0x00000CDC
         private bool CheckFolderEmpty(string path)
         {
             bool flag = string.IsNullOrEmpty(path);
@@ -331,7 +353,6 @@ namespace TesterUtil
             throw new DirectoryNotFoundException();
         }
 
-        // Token: 0x0600000B RID: 11 RVA: 0x00002B28 File Offset: 0x00000D28
         private bool CheckFolderNonEmpty(string path)
         {
             bool flag = string.IsNullOrEmpty(path);
@@ -348,7 +369,6 @@ namespace TesterUtil
             throw new DirectoryNotFoundException();
         }
 
-        // Token: 0x0600000C RID: 12 RVA: 0x00002B74 File Offset: 0x00000D74
         private void MoveDir(string srcDir, string destDir)
         {
             string[] files = Directory.GetFiles(srcDir);
@@ -365,7 +385,6 @@ namespace TesterUtil
             }
         }
 
-        // Token: 0x0600000D RID: 13 RVA: 0x00002BB8 File Offset: 0x00000DB8
         private string GetTesterIp()
         {
             string url = Path.GetDirectoryName(this.Clotho_Path) + "\\Configuration\\ATFConfig.xml";
@@ -401,9 +420,10 @@ namespace TesterUtil
             return this.TesterIPAddress;
         }
 
-        // Token: 0x0600000E RID: 14 RVA: 0x00002CB4 File Offset: 0x00000EB4
-        private void LaunchExternalProgram(string ProgramPath)
+        private async Task LaunchExternalProgram(string ProgramPath)
         {
+            IsRun = true;
+
             string fileNameWithoutExtension = Path.GetFileNameWithoutExtension(ProgramPath);
             foreach (Process process in Process.GetProcesses())
             {
@@ -414,21 +434,30 @@ namespace TesterUtil
                     Thread.Sleep(100);
                 }
             }
-            Process process2 = new Process();
-            try
+
+            await Task.Run(() =>
             {
-                process2.StartInfo.UseShellExecute = false;
-                process2.StartInfo.FileName = ProgramPath;
-                process2.StartInfo.CreateNoWindow = true;
-                process2.Start();
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-            }
+                Process process2 = new Process();
+                try
+                {
+                    process2.StartInfo.UseShellExecute = false;
+                    process2.StartInfo.FileName = ProgramPath;
+                    process2.StartInfo.CreateNoWindow = true;
+                    process2.Start();
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                }
+                finally
+                {
+                    process2.WaitForExit();
+                    process2.Dispose();
+                    IsRun = false;
+                }
+            });
         }
 
-        // Token: 0x0600000F RID: 15 RVA: 0x00002D68 File Offset: 0x00000F68
         private void KillExternalProgram(params string[] ProgramPaths)
         {
             var filenameswoExtension = ProgramPaths.Select(ProgramPathspath => Path.GetFileNameWithoutExtension(ProgramPathspath));
@@ -462,7 +491,6 @@ namespace TesterUtil
             return result;
         }
 
-        // Token: 0x06000011 RID: 17 RVA: 0x00002E10 File Offset: 0x00001010
         private string CheckLastClotho()
         {
             DirectoryInfo directoryInfo = new DirectoryInfo("C:\\");
@@ -534,7 +562,6 @@ namespace TesterUtil
             return text2;
         }
 
-        // Token: 0x06000012 RID: 18 RVA: 0x00002FF4 File Offset: 0x000011F4
         private void Display_Clotho_Version()
         {
             DirectoryInfo directoryInfo = new DirectoryInfo("C:\\");
@@ -717,7 +744,6 @@ namespace TesterUtil
             }
         }
 
-        // Token: 0x06000013 RID: 19 RVA: 0x00003534 File Offset: 0x00001734
         private void clearFolder(string FolderName)
         {
             DirectoryInfo directoryInfo = new DirectoryInfo(FolderName);
@@ -732,85 +758,35 @@ namespace TesterUtil
             }
         }
 
-        // Token: 0x06000014 RID: 20 RVA: 0x000035A8 File Offset: 0x000017A8
         private void btn_Clotho01_Click(object sender, EventArgs e)
         {
-            this.Clotho_Path = this.ChosenClotho[0];
-            this.btn_Clotho01.BackColor = Color.Green;
-            this.btn_Clotho02.BackColor = Color.Snow;
-            this.btn_Clotho03.BackColor = Color.Snow;
-            this.btn_Clotho04.BackColor = Color.Snow;
-            this.btn_Clotho05.BackColor = Color.Snow;
-            this.btn_Clotho06.BackColor = Color.Snow;
+            if (sender == btn_Clotho01)
+                this.Clotho_Path = this.ChosenClotho[0];
+            else if (sender == btn_Clotho02)
+                this.Clotho_Path = this.ChosenClotho[1];
+            else if (sender == btn_Clotho03)
+                this.Clotho_Path = this.ChosenClotho[2];
+            else if (sender == btn_Clotho04)
+                this.Clotho_Path = this.ChosenClotho[3];
+            else if (sender == btn_Clotho05)
+                this.Clotho_Path = this.ChosenClotho[4];
+            else if (sender == btn_Clotho06)
+                this.Clotho_Path = this.ChosenClotho[5];
+
+            foreach (Button _obj in new object[] { btn_Clotho01, btn_Clotho02, btn_Clotho03, btn_Clotho04, btn_Clotho05, btn_Clotho06 })
+            {
+                if (sender == _obj)
+                    _obj.BackColor = Color.Green;
+                else
+                    _obj.BackColor = Color.Snow;
+            }
         }
 
-        // Token: 0x06000015 RID: 21 RVA: 0x0000362C File Offset: 0x0000182C
-        private void btn_Clotho02_Click(object sender, EventArgs e)
-        {
-            this.Clotho_Path = this.ChosenClotho[1];
-            this.btn_Clotho01.BackColor = Color.Snow;
-            this.btn_Clotho02.BackColor = Color.Green;
-            this.btn_Clotho03.BackColor = Color.Snow;
-            this.btn_Clotho04.BackColor = Color.Snow;
-            this.btn_Clotho05.BackColor = Color.Snow;
-            this.btn_Clotho06.BackColor = Color.Snow;
-        }
-
-        // Token: 0x06000016 RID: 22 RVA: 0x000036B0 File Offset: 0x000018B0
-        private void btn_Clotho03_Click(object sender, EventArgs e)
-        {
-            this.Clotho_Path = this.ChosenClotho[2];
-            this.btn_Clotho01.BackColor = Color.Snow;
-            this.btn_Clotho02.BackColor = Color.Snow;
-            this.btn_Clotho03.BackColor = Color.Green;
-            this.btn_Clotho04.BackColor = Color.Snow;
-            this.btn_Clotho05.BackColor = Color.Snow;
-            this.btn_Clotho06.BackColor = Color.Snow;
-        }
-
-        // Token: 0x06000017 RID: 23 RVA: 0x00003734 File Offset: 0x00001934
-        private void btn_Clotho04_Click(object sender, EventArgs e)
-        {
-            this.Clotho_Path = this.ChosenClotho[3];
-            this.btn_Clotho01.BackColor = Color.Snow;
-            this.btn_Clotho02.BackColor = Color.Snow;
-            this.btn_Clotho03.BackColor = Color.Snow;
-            this.btn_Clotho04.BackColor = Color.Green;
-            this.btn_Clotho05.BackColor = Color.Snow;
-            this.btn_Clotho06.BackColor = Color.Snow;
-        }
-
-        // Token: 0x06000018 RID: 24 RVA: 0x000037B8 File Offset: 0x000019B8
-        private void btn_Clotho05_Click(object sender, EventArgs e)
-        {
-            this.Clotho_Path = this.ChosenClotho[4];
-            this.btn_Clotho01.BackColor = Color.Snow;
-            this.btn_Clotho02.BackColor = Color.Snow;
-            this.btn_Clotho03.BackColor = Color.Snow;
-            this.btn_Clotho04.BackColor = Color.Snow;
-            this.btn_Clotho05.BackColor = Color.Green;
-            this.btn_Clotho06.BackColor = Color.Snow;
-        }
-
-        // Token: 0x06000019 RID: 25 RVA: 0x0000383C File Offset: 0x00001A3C
-        private void btn_Clotho06_Click(object sender, EventArgs e)
-        {
-            this.Clotho_Path = this.ChosenClotho[5];
-            this.btn_Clotho01.BackColor = Color.Snow;
-            this.btn_Clotho02.BackColor = Color.Snow;
-            this.btn_Clotho03.BackColor = Color.Snow;
-            this.btn_Clotho04.BackColor = Color.Snow;
-            this.btn_Clotho05.BackColor = Color.Snow;
-            this.btn_Clotho06.BackColor = Color.Green;
-        }
-
-        // Token: 0x0600001A RID: 26 RVA: 0x000038BE File Offset: 0x00001ABE
         private void SetProgressLabel(string message, int progress)
         {
             this.lbl_message.Text = message + progress.ToString();
         }
 
-        // Token: 0x0600001B RID: 27 RVA: 0x000038DC File Offset: 0x00001ADC
         private void btn_Inst_Click(object sender, EventArgs e)
         {
             this.btn_Inst.BackColor = Color.Yellow;
@@ -842,74 +818,5 @@ namespace TesterUtil
                 }
             }
         }
-
-        // Token: 0x04000001 RID: 1
-        private string LastClothoFile = "C:\\Avago.ATF.Common.x64\\LastClothoFile.init";
-
-        // Token: 0x04000002 RID: 2
-        private string Clotho_Path = "C:\\Avago.ATF.4.0.0\\System\\Avago.ATF.UIs.exe";
-
-        // Token: 0x04000003 RID: 3
-        private string LatestInstalledClotho = "";
-
-        // Token: 0x04000004 RID: 4
-        private int LatestClotho = 0;
-
-        // Token: 0x04000005 RID: 5
-        private int ReadCurrentClotho = 0;
-
-        // Token: 0x04000006 RID: 6
-        private string[] ChosenClotho = new string[]
-        {
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            ""
-        };
-
-        // Token: 0x04000007 RID: 7
-        private string ResultDir = "C:\\Avago.ATF.Common\\Results\\";
-
-        // Token: 0x04000008 RID: 8
-        private string BackupDir = "C:\\Avago.ATF.Common\\Results.Backup\\";
-
-        // Token: 0x04000009 RID: 9
-        private string CloseLotFailWarning = "C:\\Avago.ATF.Common.x64\\CloseLotFailWarning.exe";
-
-        // Token: 0x0400000A RID: 10
-        private string TesterIPAddress = "1.1.1.1";
-
-        // Token: 0x0400000B RID: 11
-        private string TesterID = "Default";
-
-        // Token: 0x0400000C RID: 12
-        private string Tester_Usage = "Default";
-
-        // Token: 0x0400000D RID: 13
-        private string LocalFilePath = "C:\\Avago.ATF.Common.x64\\00_TesterUtil\\";
-
-        // Token: 0x0400000E RID: 14
-        private string LocalNiMaxReport = "C:\\Avago.ATF.Common.x64\\00_NI-MAX_Report\\";
-
-        // Token: 0x0400000F RID: 15
-        private string NiMaxReportFileName = "_NiMaxReport.html";
-
-        // Token: 0x04000010 RID: 16
-        private DateTime StartTime = DateTime.Now;
-
-        // Token: 0x04000011 RID: 17
-        private DateTime StopTime = DateTime.Now;
-
-        // Token: 0x04000012 RID: 18
-        private string Write2File = "";
-
-        // Token: 0x04000013 RID: 19
-        private int count = 0;
-
-        // Token: 0x04000014 RID: 20
-        private string ip_addr = "NA";
     }
 }

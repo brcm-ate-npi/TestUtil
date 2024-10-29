@@ -104,7 +104,7 @@
             this.btn_Clotho02.Text = "Clotho Version";
             this.btn_Clotho02.UseVisualStyleBackColor = false;
             this.btn_Clotho02.Visible = false;
-            this.btn_Clotho02.Click += new System.EventHandler(this.btn_Clotho02_Click);
+            this.btn_Clotho02.Click += new System.EventHandler(this.btn_Clotho01_Click);
             // 
             // btn_Clotho03
             // 
@@ -117,7 +117,7 @@
             this.btn_Clotho03.Text = "Clotho Version";
             this.btn_Clotho03.UseVisualStyleBackColor = false;
             this.btn_Clotho03.Visible = false;
-            this.btn_Clotho03.Click += new System.EventHandler(this.btn_Clotho03_Click);
+            this.btn_Clotho03.Click += new System.EventHandler(this.btn_Clotho01_Click);
             // 
             // btn_Clotho04
             // 
@@ -130,7 +130,7 @@
             this.btn_Clotho04.Text = "Clotho Version";
             this.btn_Clotho04.UseVisualStyleBackColor = false;
             this.btn_Clotho04.Visible = false;
-            this.btn_Clotho04.Click += new System.EventHandler(this.btn_Clotho04_Click);
+            this.btn_Clotho04.Click += new System.EventHandler(this.btn_Clotho01_Click);
             // 
             // btn_Clotho05
             // 
@@ -143,7 +143,7 @@
             this.btn_Clotho05.Text = "Clotho Version";
             this.btn_Clotho05.UseVisualStyleBackColor = false;
             this.btn_Clotho05.Visible = false;
-            this.btn_Clotho05.Click += new System.EventHandler(this.btn_Clotho05_Click);
+            this.btn_Clotho05.Click += new System.EventHandler(this.btn_Clotho01_Click);
             // 
             // btn_Inst
             // 
@@ -175,7 +175,7 @@
             this.btn_Clotho06.Text = "Clotho Version";
             this.btn_Clotho06.UseVisualStyleBackColor = false;
             this.btn_Clotho06.Visible = false;
-            this.btn_Clotho06.Click += new System.EventHandler(this.btn_Clotho06_Click);
+            this.btn_Clotho06.Click += new System.EventHandler(this.btn_Clotho01_Click);
             // 
             // lbl_msg
             // 
