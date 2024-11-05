@@ -22,17 +22,12 @@
             this.btn_QA = new System.Windows.Forms.Button();
             this.btn_NPI = new System.Windows.Forms.Button();
             this.btn_PM = new System.Windows.Forms.Button();
-            this.btn_Clotho01 = new System.Windows.Forms.Button();
-            this.btn_Clotho02 = new System.Windows.Forms.Button();
-            this.btn_Clotho03 = new System.Windows.Forms.Button();
-            this.btn_Clotho04 = new System.Windows.Forms.Button();
-            this.btn_Clotho05 = new System.Windows.Forms.Button();
             this.btn_Inst = new System.Windows.Forms.Button();
             this.lbl_message = new System.Windows.Forms.Label();
-            this.btn_Clotho06 = new System.Windows.Forms.Button();
             this.lbl_msg = new System.Windows.Forms.Label();
             this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
             this.lbl_ipaddr = new System.Windows.Forms.Label();
+            this.buttonPanel = new System.Windows.Forms.FlowLayoutPanel();
             this.SuspendLayout();
             // 
             // label1
@@ -81,70 +76,6 @@
             this.btn_PM.UseVisualStyleBackColor = false;
             this.btn_PM.Click += new System.EventHandler(this.btn_PM_Click);
             // 
-            // btn_Clotho01
-            // 
-            this.btn_Clotho01.BackColor = System.Drawing.Color.Snow;
-            this.btn_Clotho01.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btn_Clotho01.Location = new System.Drawing.Point(332, 194);
-            this.btn_Clotho01.Name = "btn_Clotho01";
-            this.btn_Clotho01.Size = new System.Drawing.Size(267, 29);
-            this.btn_Clotho01.TabIndex = 4;
-            this.btn_Clotho01.Text = "Clotho Version";
-            this.btn_Clotho01.UseVisualStyleBackColor = false;
-            this.btn_Clotho01.Click += new System.EventHandler(this.btn_Clotho01_Click);
-            // 
-            // btn_Clotho02
-            // 
-            this.btn_Clotho02.BackColor = System.Drawing.Color.Snow;
-            this.btn_Clotho02.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btn_Clotho02.Location = new System.Drawing.Point(332, 229);
-            this.btn_Clotho02.Name = "btn_Clotho02";
-            this.btn_Clotho02.Size = new System.Drawing.Size(267, 29);
-            this.btn_Clotho02.TabIndex = 5;
-            this.btn_Clotho02.Text = "Clotho Version";
-            this.btn_Clotho02.UseVisualStyleBackColor = false;
-            this.btn_Clotho02.Visible = false;
-            this.btn_Clotho02.Click += new System.EventHandler(this.btn_Clotho01_Click);
-            // 
-            // btn_Clotho03
-            // 
-            this.btn_Clotho03.BackColor = System.Drawing.Color.Snow;
-            this.btn_Clotho03.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btn_Clotho03.Location = new System.Drawing.Point(332, 266);
-            this.btn_Clotho03.Name = "btn_Clotho03";
-            this.btn_Clotho03.Size = new System.Drawing.Size(267, 29);
-            this.btn_Clotho03.TabIndex = 6;
-            this.btn_Clotho03.Text = "Clotho Version";
-            this.btn_Clotho03.UseVisualStyleBackColor = false;
-            this.btn_Clotho03.Visible = false;
-            this.btn_Clotho03.Click += new System.EventHandler(this.btn_Clotho01_Click);
-            // 
-            // btn_Clotho04
-            // 
-            this.btn_Clotho04.BackColor = System.Drawing.Color.Snow;
-            this.btn_Clotho04.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btn_Clotho04.Location = new System.Drawing.Point(332, 301);
-            this.btn_Clotho04.Name = "btn_Clotho04";
-            this.btn_Clotho04.Size = new System.Drawing.Size(267, 29);
-            this.btn_Clotho04.TabIndex = 7;
-            this.btn_Clotho04.Text = "Clotho Version";
-            this.btn_Clotho04.UseVisualStyleBackColor = false;
-            this.btn_Clotho04.Visible = false;
-            this.btn_Clotho04.Click += new System.EventHandler(this.btn_Clotho01_Click);
-            // 
-            // btn_Clotho05
-            // 
-            this.btn_Clotho05.BackColor = System.Drawing.Color.Snow;
-            this.btn_Clotho05.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btn_Clotho05.Location = new System.Drawing.Point(332, 336);
-            this.btn_Clotho05.Name = "btn_Clotho05";
-            this.btn_Clotho05.Size = new System.Drawing.Size(267, 29);
-            this.btn_Clotho05.TabIndex = 8;
-            this.btn_Clotho05.Text = "Clotho Version";
-            this.btn_Clotho05.UseVisualStyleBackColor = false;
-            this.btn_Clotho05.Visible = false;
-            this.btn_Clotho05.Click += new System.EventHandler(this.btn_Clotho01_Click);
-            // 
             // btn_Inst
             // 
             this.btn_Inst.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
@@ -163,19 +94,6 @@
             this.lbl_message.Name = "lbl_message";
             this.lbl_message.Size = new System.Drawing.Size(0, 13);
             this.lbl_message.TabIndex = 10;
-            // 
-            // btn_Clotho06
-            // 
-            this.btn_Clotho06.BackColor = System.Drawing.Color.Snow;
-            this.btn_Clotho06.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btn_Clotho06.Location = new System.Drawing.Point(332, 371);
-            this.btn_Clotho06.Name = "btn_Clotho06";
-            this.btn_Clotho06.Size = new System.Drawing.Size(267, 29);
-            this.btn_Clotho06.TabIndex = 11;
-            this.btn_Clotho06.Text = "Clotho Version";
-            this.btn_Clotho06.UseVisualStyleBackColor = false;
-            this.btn_Clotho06.Visible = false;
-            this.btn_Clotho06.Click += new System.EventHandler(this.btn_Clotho01_Click);
             // 
             // lbl_msg
             // 
@@ -203,21 +121,24 @@
             this.lbl_ipaddr.TabIndex = 13;
             this.lbl_ipaddr.Text = "Tester IP Address:";
             // 
+            // buttonPanel
+            // 
+            this.buttonPanel.AutoScroll = true;
+            this.buttonPanel.Location = new System.Drawing.Point(329, 193);
+            this.buttonPanel.Name = "buttonPanel";
+            this.buttonPanel.Size = new System.Drawing.Size(308, 239);
+            this.buttonPanel.TabIndex = 14;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(649, 470);
+            this.Controls.Add(this.buttonPanel);
             this.Controls.Add(this.lbl_ipaddr);
             this.Controls.Add(this.lbl_msg);
-            this.Controls.Add(this.btn_Clotho06);
             this.Controls.Add(this.lbl_message);
             this.Controls.Add(this.btn_Inst);
-            this.Controls.Add(this.btn_Clotho05);
-            this.Controls.Add(this.btn_Clotho04);
-            this.Controls.Add(this.btn_Clotho03);
-            this.Controls.Add(this.btn_Clotho02);
-            this.Controls.Add(this.btn_Clotho01);
             this.Controls.Add(this.btn_PM);
             this.Controls.Add(this.btn_NPI);
             this.Controls.Add(this.btn_QA);
@@ -245,29 +166,11 @@
 		// Token: 0x04000019 RID: 25
 		private global::System.Windows.Forms.Button btn_PM;
 
-		// Token: 0x0400001A RID: 26
-		private global::System.Windows.Forms.Button btn_Clotho01;
-
-		// Token: 0x0400001B RID: 27
-		private global::System.Windows.Forms.Button btn_Clotho02;
-
-		// Token: 0x0400001C RID: 28
-		private global::System.Windows.Forms.Button btn_Clotho03;
-
-		// Token: 0x0400001D RID: 29
-		private global::System.Windows.Forms.Button btn_Clotho04;
-
-		// Token: 0x0400001E RID: 30
-		private global::System.Windows.Forms.Button btn_Clotho05;
-
 		// Token: 0x0400001F RID: 31
 		private global::System.Windows.Forms.Button btn_Inst;
 
 		// Token: 0x04000020 RID: 32
 		private global::System.Windows.Forms.Label lbl_message;
-
-		// Token: 0x04000021 RID: 33
-		private global::System.Windows.Forms.Button btn_Clotho06;
 
 		// Token: 0x04000022 RID: 34
 		private global::System.Windows.Forms.Label lbl_msg;
@@ -277,5 +180,6 @@
 
 		// Token: 0x04000024 RID: 36
 		private global::System.Windows.Forms.Label lbl_ipaddr;
-	}
+        private System.Windows.Forms.FlowLayoutPanel buttonPanel;
+    }
 }

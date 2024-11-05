@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -20,7 +22,6 @@ namespace TesterUtil
         private string LatestInstalledClotho = "";
         private int LatestClotho = 0;
         private int ReadCurrentClotho = 0;
-        private string[] ChosenClotho = new string[] { "", "", "", "", "", "", "" };
         private string ResultDir = @"C:\Avago.ATF.Common\Results\";
         private string BackupDir = @"C:\Avago.ATF.Common\Results.Backup\";
         private string CloseLotFailWarning = @"C:\Avago.ATF.Common.x64\CloseLotFailWarning.exe";
@@ -35,23 +36,32 @@ namespace TesterUtil
         private string Write2File = "";
         private int count = 0;
         private string ip_addr = "NA";
+        private List<(string version, string fullpath)> ClothoList = new List<(string version, string fullpath)>();
+        private int clothoIndex = 0;
+
+        protected override void WndProc(ref Message m)
+        {
+            if (m.Msg == Program.WM_SHOWFIRSTINSTANCE)
+            {
+                if (WindowState == FormWindowState.Minimized)
+                {
+                    Program.ShowWindow(Handle, Program.SW_RESTORE);
+                }
+                Program.SetForegroundWindow(Handle);
+            }
+            base.WndProc(ref m);
+        }
 
         public Form1()
         {
             this.InitializeComponent();
-            bool flag = Directory.Exists(this.LocalFilePath);
-            bool flag2 = !flag;
-            if (flag2)
-            {
-                Directory.CreateDirectory(this.LocalFilePath);
-            }
-            bool flag3 = Directory.Exists(this.LocalNiMaxReport);
-            bool flag4 = !flag3;
-            if (flag4)
-            {
-                Directory.CreateDirectory(this.LocalNiMaxReport);
-            }
-            this.Clotho_Path = this.CheckLastClotho();
+            this.Text = Program.STR_FORMNAME;
+
+            if (!Directory.Exists(this.LocalFilePath)) Directory.CreateDirectory(this.LocalFilePath);
+            if (!Directory.Exists(this.LocalNiMaxReport)) Directory.CreateDirectory(this.LocalNiMaxReport);
+
+            GetClothoList();
+            CheckLastClotho();
             this.Display_Clotho_Version();
             this.MoveDir(this.ResultDir, this.BackupDir);
 
@@ -475,7 +485,6 @@ namespace TesterUtil
             Thread.Sleep(100);
         }
 
-        // Token: 0x06000010 RID: 16 RVA: 0x00002DBC File Offset: 0x00000FBC
         private bool CheckExternalProgram(string ProgramPath)
         {
             string fileNameWithoutExtension = Path.GetFileNameWithoutExtension(ProgramPath);
@@ -491,256 +500,69 @@ namespace TesterUtil
             return result;
         }
 
-        private string CheckLastClotho()
+        private void GetClothoList()
         {
-            DirectoryInfo directoryInfo = new DirectoryInfo("C:\\");
-            DirectoryInfo[] directories = directoryInfo.GetDirectories();
-            int num = 0;
-            string[] array = new string[]
+            var directories = Directory.GetDirectories(@"C:\")
+            .Where(dir => Regex.IsMatch(dir, @"Avago.ATF.\d+.\d+.\d+"))
+            .ToList();
+
+            foreach (var dir in directories)
             {
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                ""
-            };
-            foreach (DirectoryInfo directoryInfo2 in directories)
-            {
-                bool flag = directoryInfo2.Name.StartsWith("Avago.ATF.") & !directoryInfo2.Name.Contains("Common");
-                if (flag)
+                string _clotho_exe = Path.Combine(dir, @"System\Avago.ATF.UIs.exe");
+                bool flag2 = File.Exists(_clotho_exe);
+                if (flag2)
                 {
-                    string text = directoryInfo2.FullName + "\\System\\Avago.ATF.UIs.exe";
-                    bool flag2 = File.Exists(text);
-                    if (flag2)
+                    var _version = FileVersionInfo.GetVersionInfo(_clotho_exe).ProductVersion;
+                    ClothoList.Add((_version, _clotho_exe));
+
+                    this.ReadCurrentClotho = Convert.ToInt32(Regex.Replace(_version, @"[^0-9]", ""));
+                    if (this.ReadCurrentClotho > this.LatestClotho)
                     {
-                        array[num] = FileVersionInfo.GetVersionInfo(text).ProductVersion;
-                        this.ChosenClotho[num] = text;
-                        string value = array[num].Replace(".", "").Remove(3);
-                        this.ReadCurrentClotho = Convert.ToInt32(value);
-                        bool flag3 = num == 0;
-                        if (flag3)
-                        {
-                            this.LatestClotho = this.ReadCurrentClotho;
-                            this.LatestInstalledClotho = text;
-                        }
-                        else
-                        {
-                            bool flag4 = this.ReadCurrentClotho > this.LatestClotho;
-                            if (flag4)
-                            {
-                                this.LatestClotho = this.ReadCurrentClotho;
-                                this.LatestInstalledClotho = text;
-                            }
-                        }
-                        num++;
+                        this.LatestClotho = this.ReadCurrentClotho;
+                        this.LatestInstalledClotho = _clotho_exe;
                     }
                 }
             }
-            bool flag5 = File.Exists(this.LastClothoFile);
+        }
+
+        private void CheckLastClotho()
+        {
             string text2;
-            if (flag5)
+            if (File.Exists(this.LastClothoFile))
             {
-                string[] array3 = File.ReadAllLines(this.LastClothoFile);
-                text2 = array3[0];
-                bool flag6 = !File.Exists(text2);
-                if (flag6)
-                {
-                    text2 = this.LatestInstalledClotho;
-                }
-                bool flag7 = !text2.Contains("Avago.ATF.UIs.exe");
-                if (flag7)
-                {
-                    text2 = this.LatestInstalledClotho;
-                }
+                text2 = File.ReadAllLines(this.LastClothoFile)[0];
+
+                if (!File.Exists(text2)) text2 = this.LatestInstalledClotho;
+                if (!text2.Contains("Avago.ATF.UIs.exe")) text2 = this.LatestInstalledClotho;
             }
             else
             {
                 text2 = this.LatestInstalledClotho;
             }
-            return text2;
+
+            clothoIndex = ClothoList.FindIndex(s => s.fullpath == text2);
+            Clotho_Path = text2;
         }
 
         private void Display_Clotho_Version()
         {
-            DirectoryInfo directoryInfo = new DirectoryInfo("C:\\");
-            DirectoryInfo[] directories = directoryInfo.GetDirectories();
-            int num = 0;
-            string[] array = new string[]
+            int _idx = 0;
+
+            foreach (var dir in ClothoList)
             {
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                ""
-            };
-            foreach (DirectoryInfo directoryInfo2 in directories)
-            {
-                bool flag = directoryInfo2.Name.StartsWith("Avago.ATF.") & !directoryInfo2.Name.Contains("Common");
-                if (flag)
+                Button button = new Button
                 {
-                    string text = directoryInfo2.FullName + "\\System\\Avago.ATF.UIs.exe";
-                    bool flag2 = File.Exists(text);
-                    if (flag2)
-                    {
-                        array[num] = FileVersionInfo.GetVersionInfo(text).ProductVersion;
-                        this.ChosenClotho[num] = text;
-                        string value = array[num].Replace(".", "").Remove(3);
-                        this.ReadCurrentClotho = Convert.ToInt32(value);
-                        bool flag3 = num == 0;
-                        if (flag3)
-                        {
-                            this.LatestClotho = this.ReadCurrentClotho;
-                            this.LatestInstalledClotho = text;
-                        }
-                        else
-                        {
-                            bool flag4 = this.ReadCurrentClotho > this.LatestClotho;
-                            if (flag4)
-                            {
-                                this.LatestClotho = this.ReadCurrentClotho;
-                                this.LatestInstalledClotho = text;
-                            }
-                        }
-                        num++;
-                    }
-                }
-            }
-            bool flag5 = File.Exists(this.LastClothoFile);
-            string text2;
-            if (flag5)
-            {
-                string[] array3 = File.ReadAllLines(this.LastClothoFile);
-                text2 = array3[0];
-                bool flag6 = !File.Exists(text2);
-                if (flag6)
-                {
-                    text2 = this.LatestInstalledClotho;
-                }
-            }
-            else
-            {
-                text2 = this.LatestInstalledClotho;
-            }
-            for (int j = 0; j < num; j++)
-            {
-                bool flag7 = j == 0;
-                if (flag7)
-                {
-                    this.btn_Clotho01.Text = "Clotho v." + array[j];
-                    this.btn_Clotho01.Visible = true;
-                    bool flag8 = FileVersionInfo.GetVersionInfo(text2).ProductVersion == array[j];
-                    if (flag8)
-                    {
-                        this.btn_Clotho01.BackColor = Color.Green;
-                    }
-                    else
-                    {
-                        bool flag9 = this.Clotho_Path == this.ChosenClotho[j];
-                        if (flag9)
-                        {
-                            this.btn_Clotho01.BackColor = Color.Green;
-                        }
-                    }
-                }
-                bool flag10 = j == 1;
-                if (flag10)
-                {
-                    this.btn_Clotho02.Text = "Clotho v." + array[j];
-                    this.btn_Clotho02.Visible = true;
-                    bool flag11 = FileVersionInfo.GetVersionInfo(text2).ProductVersion == array[j];
-                    if (flag11)
-                    {
-                        this.btn_Clotho02.BackColor = Color.Green;
-                    }
-                    else
-                    {
-                        bool flag12 = this.Clotho_Path == this.ChosenClotho[j];
-                        if (flag12)
-                        {
-                            this.btn_Clotho02.BackColor = Color.Green;
-                        }
-                    }
-                }
-                bool flag13 = j == 2;
-                if (flag13)
-                {
-                    this.btn_Clotho03.Text = "Clotho v." + array[j];
-                    this.btn_Clotho03.Visible = true;
-                    bool flag14 = FileVersionInfo.GetVersionInfo(text2).ProductVersion == array[j];
-                    if (flag14)
-                    {
-                        this.btn_Clotho03.BackColor = Color.Green;
-                    }
-                    else
-                    {
-                        bool flag15 = this.Clotho_Path == this.ChosenClotho[j];
-                        if (flag15)
-                        {
-                            this.btn_Clotho03.BackColor = Color.Green;
-                        }
-                    }
-                }
-                bool flag16 = j == 3;
-                if (flag16)
-                {
-                    this.btn_Clotho04.Text = "Clotho v." + array[j];
-                    this.btn_Clotho04.Visible = true;
-                    bool flag17 = FileVersionInfo.GetVersionInfo(text2).ProductVersion == array[j];
-                    if (flag17)
-                    {
-                        this.btn_Clotho04.BackColor = Color.Green;
-                    }
-                    else
-                    {
-                        bool flag18 = this.Clotho_Path == this.ChosenClotho[j];
-                        if (flag18)
-                        {
-                            this.btn_Clotho04.BackColor = Color.Green;
-                        }
-                    }
-                }
-                bool flag19 = j == 4;
-                if (flag19)
-                {
-                    this.btn_Clotho05.Text = "Clotho v." + array[j];
-                    this.btn_Clotho05.Visible = true;
-                    bool flag20 = FileVersionInfo.GetVersionInfo(text2).ProductVersion == array[j];
-                    if (flag20)
-                    {
-                        this.btn_Clotho05.BackColor = Color.Green;
-                    }
-                    else
-                    {
-                        bool flag21 = this.Clotho_Path == this.ChosenClotho[j];
-                        if (flag21)
-                        {
-                            this.btn_Clotho05.BackColor = Color.Green;
-                        }
-                    }
-                }
-                bool flag22 = j == 5;
-                if (flag22)
-                {
-                    this.btn_Clotho06.Text = "Clotho v." + array[j];
-                    this.btn_Clotho06.Visible = true;
-                    bool flag23 = FileVersionInfo.GetVersionInfo(text2).ProductVersion == array[j];
-                    if (flag23)
-                    {
-                        this.btn_Clotho06.BackColor = Color.Green;
-                    }
-                    else
-                    {
-                        bool flag24 = this.Clotho_Path == this.ChosenClotho[j];
-                        if (flag24)
-                        {
-                            this.btn_Clotho06.BackColor = Color.Green;
-                        }
-                    }
-                }
+                    Text = $"Clotho v.{dir.version}",
+                    Width = 267,
+                    Height = 29,
+                    Tag = dir.fullpath,
+                    BackColor = clothoIndex == _idx ? Color.Green : Color.Snow,
+                    Font = new Font("Microsoft Sans Serif", 9.75f, FontStyle.Bold)
+                };
+
+                button.Click += btn_Clotho01_Click;
+                buttonPanel.Controls.Add(button);
+                _idx += 1;
             }
         }
 
@@ -760,25 +582,19 @@ namespace TesterUtil
 
         private void btn_Clotho01_Click(object sender, EventArgs e)
         {
-            if (sender == btn_Clotho01)
-                this.Clotho_Path = this.ChosenClotho[0];
-            else if (sender == btn_Clotho02)
-                this.Clotho_Path = this.ChosenClotho[1];
-            else if (sender == btn_Clotho03)
-                this.Clotho_Path = this.ChosenClotho[2];
-            else if (sender == btn_Clotho04)
-                this.Clotho_Path = this.ChosenClotho[3];
-            else if (sender == btn_Clotho05)
-                this.Clotho_Path = this.ChosenClotho[4];
-            else if (sender == btn_Clotho06)
-                this.Clotho_Path = this.ChosenClotho[5];
-
-            foreach (Button _obj in new object[] { btn_Clotho01, btn_Clotho02, btn_Clotho03, btn_Clotho04, btn_Clotho05, btn_Clotho06 })
+            Button clickedButton = sender as Button;
+            if (clickedButton != null)
             {
-                if (sender == _obj)
-                    _obj.BackColor = Color.Green;
-                else
-                    _obj.BackColor = Color.Snow;
+                int buttonIndex = buttonPanel.Controls.GetChildIndex(clickedButton);
+
+                string folderPath = clickedButton.Tag.ToString();
+
+                this.Clotho_Path = folderPath;
+
+                for (int i = 0; i < buttonPanel.Controls.Count; i++)
+                {
+                    buttonPanel.Controls[i].BackColor = i == buttonIndex ? Color.Green : Color.Snow;
+                }
             }
         }
 
