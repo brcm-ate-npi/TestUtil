@@ -280,70 +280,74 @@ namespace TesterUtil
             string text2 = "10.10.10.10";
             string text3 = "10.1.1.1";
             string result = "error";
-            text = Path.GetDirectoryName(this.Clotho_Path) + "\\Configuration\\ATFConfig.xml";
-            XmlTextReader xmlTextReader = new XmlTextReader(text);
-            while (xmlTextReader.Read())
+            try
             {
-                XmlNodeType nodeType = xmlTextReader.NodeType;
-                XmlNodeType xmlNodeType = nodeType;
-                if (xmlNodeType == XmlNodeType.Element)
+                text = Path.GetDirectoryName(this.Clotho_Path) + "\\Configuration\\ATFConfig.xml";
+                XmlTextReader xmlTextReader = new XmlTextReader(text);
+                while (xmlTextReader.Read())
                 {
-                    bool flag2 = xmlTextReader.Name == "ConfigItem";
-                    if (flag2)
+                    XmlNodeType nodeType = xmlTextReader.NodeType;
+                    XmlNodeType xmlNodeType = nodeType;
+                    if (xmlNodeType == XmlNodeType.Element)
                     {
-                        xmlTextReader.MoveToNextAttribute();
-                        bool flag3 = xmlTextReader.Value == "IPAddress";
-                        if (flag3)
+                        bool flag2 = xmlTextReader.Name == "ConfigItem";
+                        if (flag2)
                         {
                             xmlTextReader.MoveToNextAttribute();
-                            xmlTextReader.MoveToNextAttribute();
-                            text2 = xmlTextReader.Value;
+                            bool flag3 = xmlTextReader.Value == "IPAddress";
+                            if (flag3)
+                            {
+                                xmlTextReader.MoveToNextAttribute();
+                                xmlTextReader.MoveToNextAttribute();
+                                text2 = xmlTextReader.Value;
+                            }
                         }
                     }
                 }
-            }
-            xmlTextReader.Close();
-            string hostName = Dns.GetHostName();
-            IPHostEntry hostByName = Dns.GetHostEntry(hostName);
-            foreach (IPAddress ipaddress in hostByName.AddressList)
-            {
-                string a = ipaddress.ToString();
-                bool flag4 = a == text2;
-                if (flag4)
+                xmlTextReader.Close();
+                string hostName = Dns.GetHostName();
+                IPHostEntry hostByName = Dns.GetHostEntry(hostName);
+                foreach (IPAddress ipaddress in hostByName.AddressList)
                 {
-                    flag = false;
-                    result = text2;
-                }
-            }
-            bool flag5 = flag;
-            if (flag5)
-            {
-                foreach (IPAddress ipaddress2 in hostByName.AddressList)
-                {
-                    bool flag6 = ipaddress2.ToString().StartsWith("10.");
-                    if (flag6)
+                    string a = ipaddress.ToString();
+                    bool flag4 = a == text2;
+                    if (flag4)
                     {
-                        text3 = ipaddress2.ToString();
+                        flag = false;
+                        result = text2;
                     }
                 }
-            }
-            bool flag7 = false;
-            foreach (string text4 in File.ReadLines(text))
-            {
-                bool flag8 = text4.Contains("IPAddress") && text4.Contains(text2);
-                if (flag8)
+                bool flag5 = flag;
+                if (flag5)
                 {
-                    flag7 = true;
+                    foreach (IPAddress ipaddress2 in hostByName.AddressList)
+                    {
+                        bool flag6 = ipaddress2.ToString().StartsWith("10.");
+                        if (flag6)
+                        {
+                            text3 = ipaddress2.ToString();
+                        }
+                    }
+                }
+                bool flag7 = false;
+                foreach (string text4 in File.ReadLines(text))
+                {
+                    bool flag8 = text4.Contains("IPAddress") && text4.Contains(text2);
+                    if (flag8)
+                    {
+                        flag7 = true;
+                    }
+                }
+                bool flag9 = flag7 && flag;
+                if (flag9)
+                {
+                    string text5 = File.ReadAllText(text);
+                    text5 = text5.Replace(text2, text3);
+                    File.WriteAllText(text, text5);
+                    result = text3;
                 }
             }
-            bool flag9 = flag7 && flag;
-            if (flag9)
-            {
-                string text5 = File.ReadAllText(text);
-                text5 = text5.Replace(text2, text3);
-                File.WriteAllText(text, text5);
-                result = text3;
-            }
+            catch (Exception ex) { MessageBox.Show(ex.Message); }
             return result;
         }
 
