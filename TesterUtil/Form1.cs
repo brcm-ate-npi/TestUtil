@@ -102,6 +102,21 @@ namespace TesterUtil
             if (IsRun) return;
 
             this.Tester_Usage = tester_usage;
+
+            try
+            {
+                var ClothoIni = Directory.GetFiles(Path.Combine(Path.GetDirectoryName(this.Clotho_Path), "Configuration"), "*.ini");
+                foreach (var file in ClothoIni)
+                {
+                    if (File.Exists(file))
+                        File.Delete(file);
+                }
+            }
+            catch
+            {
+
+            }
+
             File.WriteAllText(this.LastClothoFile, this.Clotho_Path);
             this.MoveDir(this.ResultDir, this.BackupDir);
             string directoryName = Path.GetDirectoryName(this.Clotho_Path);
