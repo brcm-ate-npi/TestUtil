@@ -18,33 +18,28 @@
 		private void InitializeComponent()
 		{
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
-            this.label1 = new System.Windows.Forms.Label();
             this.btn_QA = new System.Windows.Forms.Button();
             this.btn_NPI = new System.Windows.Forms.Button();
             this.btn_PM = new System.Windows.Forms.Button();
             this.btn_Inst = new System.Windows.Forms.Button();
-            this.lbl_message = new System.Windows.Forms.Label();
             this.lbl_msg = new System.Windows.Forms.Label();
             this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
             this.lbl_ipaddr = new System.Windows.Forms.Label();
             this.buttonPanel = new System.Windows.Forms.FlowLayoutPanel();
+            this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
+            this.btnRdpLogoff = new System.Windows.Forms.Button();
+            this.btnKillExcel = new System.Windows.Forms.Button();
+            this.tbxLogs = new System.Windows.Forms.TextBox();
+            this.groupBox1.SuspendLayout();
+            this.flowLayoutPanel1.SuspendLayout();
             this.SuspendLayout();
-            // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label1.Location = new System.Drawing.Point(12, 9);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(127, 20);
-            this.label1.TabIndex = 0;
-            this.label1.Text = "Tester Utilization";
             // 
             // btn_QA
             // 
             this.btn_QA.BackColor = System.Drawing.Color.PaleGreen;
             this.btn_QA.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btn_QA.Location = new System.Drawing.Point(40, 32);
+            this.btn_QA.Location = new System.Drawing.Point(6, 19);
             this.btn_QA.Name = "btn_QA";
             this.btn_QA.Size = new System.Drawing.Size(267, 156);
             this.btn_QA.TabIndex = 1;
@@ -56,7 +51,7 @@
             // 
             this.btn_NPI.BackColor = System.Drawing.Color.DodgerBlue;
             this.btn_NPI.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btn_NPI.Location = new System.Drawing.Point(332, 32);
+            this.btn_NPI.Location = new System.Drawing.Point(288, 19);
             this.btn_NPI.Name = "btn_NPI";
             this.btn_NPI.Size = new System.Drawing.Size(267, 156);
             this.btn_NPI.TabIndex = 2;
@@ -68,7 +63,7 @@
             // 
             this.btn_PM.BackColor = System.Drawing.Color.DarkOrange;
             this.btn_PM.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btn_PM.Location = new System.Drawing.Point(40, 194);
+            this.btn_PM.Location = new System.Drawing.Point(6, 181);
             this.btn_PM.Name = "btn_PM";
             this.btn_PM.Size = new System.Drawing.Size(267, 156);
             this.btn_PM.TabIndex = 3;
@@ -79,7 +74,7 @@
             // btn_Inst
             // 
             this.btn_Inst.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btn_Inst.Location = new System.Drawing.Point(40, 356);
+            this.btn_Inst.Location = new System.Drawing.Point(6, 343);
             this.btn_Inst.Name = "btn_Inst";
             this.btn_Inst.Size = new System.Drawing.Size(267, 76);
             this.btn_Inst.TabIndex = 9;
@@ -87,18 +82,10 @@
             this.btn_Inst.UseVisualStyleBackColor = true;
             this.btn_Inst.Click += new System.EventHandler(this.btn_Inst_Click);
             // 
-            // lbl_message
-            // 
-            this.lbl_message.AutoSize = true;
-            this.lbl_message.Location = new System.Drawing.Point(329, 357);
-            this.lbl_message.Name = "lbl_message";
-            this.lbl_message.Size = new System.Drawing.Size(0, 13);
-            this.lbl_message.TabIndex = 10;
-            // 
             // lbl_msg
             // 
             this.lbl_msg.AutoSize = true;
-            this.lbl_msg.Location = new System.Drawing.Point(37, 444);
+            this.lbl_msg.Location = new System.Drawing.Point(3, 431);
             this.lbl_msg.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lbl_msg.Name = "lbl_msg";
             this.lbl_msg.Size = new System.Drawing.Size(14, 13);
@@ -114,7 +101,7 @@
             // lbl_ipaddr
             // 
             this.lbl_ipaddr.AutoSize = true;
-            this.lbl_ipaddr.Location = new System.Drawing.Point(55, 444);
+            this.lbl_ipaddr.Location = new System.Drawing.Point(21, 431);
             this.lbl_ipaddr.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lbl_ipaddr.Name = "lbl_ipaddr";
             this.lbl_ipaddr.Size = new System.Drawing.Size(94, 13);
@@ -124,28 +111,84 @@
             // buttonPanel
             // 
             this.buttonPanel.AutoScroll = true;
-            this.buttonPanel.Location = new System.Drawing.Point(329, 193);
+            this.buttonPanel.Location = new System.Drawing.Point(285, 180);
             this.buttonPanel.Name = "buttonPanel";
-            this.buttonPanel.Size = new System.Drawing.Size(308, 239);
+            this.buttonPanel.Size = new System.Drawing.Size(270, 239);
             this.buttonPanel.TabIndex = 14;
+            // 
+            // groupBox1
+            // 
+            this.groupBox1.Controls.Add(this.buttonPanel);
+            this.groupBox1.Controls.Add(this.btn_QA);
+            this.groupBox1.Controls.Add(this.lbl_ipaddr);
+            this.groupBox1.Controls.Add(this.btn_NPI);
+            this.groupBox1.Controls.Add(this.lbl_msg);
+            this.groupBox1.Controls.Add(this.btn_PM);
+            this.groupBox1.Controls.Add(this.btn_Inst);
+            this.groupBox1.Location = new System.Drawing.Point(12, 12);
+            this.groupBox1.Name = "groupBox1";
+            this.groupBox1.Size = new System.Drawing.Size(563, 459);
+            this.groupBox1.TabIndex = 15;
+            this.groupBox1.TabStop = false;
+            this.groupBox1.Text = "Tester Utilization";
+            // 
+            // flowLayoutPanel1
+            // 
+            this.flowLayoutPanel1.Controls.Add(this.btnRdpLogoff);
+            this.flowLayoutPanel1.Controls.Add(this.btnKillExcel);
+            this.flowLayoutPanel1.Location = new System.Drawing.Point(581, 12);
+            this.flowLayoutPanel1.Name = "flowLayoutPanel1";
+            this.flowLayoutPanel1.Size = new System.Drawing.Size(84, 459);
+            this.flowLayoutPanel1.TabIndex = 16;
+            // 
+            // btnRdpLogoff
+            // 
+            this.btnRdpLogoff.Location = new System.Drawing.Point(3, 3);
+            this.btnRdpLogoff.Name = "btnRdpLogoff";
+            this.btnRdpLogoff.Size = new System.Drawing.Size(75, 40);
+            this.btnRdpLogoff.TabIndex = 0;
+            this.btnRdpLogoff.Text = "RDP Logoff";
+            this.btnRdpLogoff.UseVisualStyleBackColor = true;
+            this.btnRdpLogoff.Click += new System.EventHandler(this.btnRdpLogoff_Click);
+            // 
+            // btnKillExcel
+            // 
+            this.btnKillExcel.Location = new System.Drawing.Point(3, 49);
+            this.btnKillExcel.Name = "btnKillExcel";
+            this.btnKillExcel.Size = new System.Drawing.Size(75, 40);
+            this.btnKillExcel.TabIndex = 1;
+            this.btnKillExcel.Text = "Kill Excel";
+            this.btnKillExcel.UseVisualStyleBackColor = true;
+            this.btnKillExcel.Click += new System.EventHandler(this.btnKillExcel_Click);
+            // 
+            // tbxLogs
+            // 
+            this.tbxLogs.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.tbxLogs.BackColor = System.Drawing.SystemColors.WindowText;
+            this.tbxLogs.Font = new System.Drawing.Font("Calibri", 12F, System.Drawing.FontStyle.Bold);
+            this.tbxLogs.ForeColor = System.Drawing.SystemColors.Window;
+            this.tbxLogs.Location = new System.Drawing.Point(12, 477);
+            this.tbxLogs.Multiline = true;
+            this.tbxLogs.Name = "tbxLogs";
+            this.tbxLogs.Size = new System.Drawing.Size(653, 61);
+            this.tbxLogs.TabIndex = 17;
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(649, 470);
-            this.Controls.Add(this.buttonPanel);
-            this.Controls.Add(this.lbl_ipaddr);
-            this.Controls.Add(this.lbl_msg);
-            this.Controls.Add(this.lbl_message);
-            this.Controls.Add(this.btn_Inst);
-            this.Controls.Add(this.btn_PM);
-            this.Controls.Add(this.btn_NPI);
-            this.Controls.Add(this.btn_QA);
-            this.Controls.Add(this.label1);
+            this.ClientSize = new System.Drawing.Size(675, 550);
+            this.Controls.Add(this.tbxLogs);
+            this.Controls.Add(this.flowLayoutPanel1);
+            this.Controls.Add(this.groupBox1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "Form1";
             this.Text = "WSD Tester Utilization v.1.0.5.0 (Auto IP Address Update)";
+            this.groupBox1.ResumeLayout(false);
+            this.groupBox1.PerformLayout();
+            this.flowLayoutPanel1.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -153,9 +196,6 @@
 
 		// Token: 0x04000015 RID: 21
 		private global::System.ComponentModel.IContainer components = null;
-
-		// Token: 0x04000016 RID: 22
-		private global::System.Windows.Forms.Label label1;
 
 		// Token: 0x04000017 RID: 23
 		private global::System.Windows.Forms.Button btn_QA;
@@ -169,9 +209,6 @@
 		// Token: 0x0400001F RID: 31
 		private global::System.Windows.Forms.Button btn_Inst;
 
-		// Token: 0x04000020 RID: 32
-		private global::System.Windows.Forms.Label lbl_message;
-
 		// Token: 0x04000022 RID: 34
 		private global::System.Windows.Forms.Label lbl_msg;
 
@@ -181,5 +218,10 @@
 		// Token: 0x04000024 RID: 36
 		private global::System.Windows.Forms.Label lbl_ipaddr;
         private System.Windows.Forms.FlowLayoutPanel buttonPanel;
+        private System.Windows.Forms.GroupBox groupBox1;
+        private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel1;
+        private System.Windows.Forms.Button btnRdpLogoff;
+        private System.Windows.Forms.TextBox tbxLogs;
+        private System.Windows.Forms.Button btnKillExcel;
     }
 }

@@ -11,7 +11,7 @@ namespace TesterUtil
         private static Mutex mutex;
         public const int SW_RESTORE = 9;
 
-        public static readonly Version AppVersion = new Version(1, 0, 8, 0);
+        public static readonly Version AppVersion = new Version(1, 0, 9, 0);
         public static readonly string STR_FORMNAME = $"WSD Tester Utilization v.{AppVersion.ToString()} (Auto IP Address Update)";
 
         [DllImport("user32.dll")]

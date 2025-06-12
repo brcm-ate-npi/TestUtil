@@ -91,6 +91,12 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.manifest" />
+    <None Include="jay\Clotho Master.lnk">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="jay\copy_dll_to_setup.bat">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -108,5 +114,20 @@
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="jay\distribution_target.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>if exist "$(SolutionDir)..\Published\*" del /Q "$(SolutionDir)..\Published\*"
+xcopy "$(TargetDir)*.exe" "$(SolutionDir)..\Published\" /Y /I
+
+xcopy "$(TargetDir)\jay\*.bat" "$(SolutionDir)..\Published\" /Y /I
+
+xcopy "$(TargetDir)\jay\*.txt" "$(SolutionDir)..\Published\" /Y /I
+
+start $(SolutionDir)..\Published\.</PostBuildEvent>
+  </PropertyGroup>
 </Project>

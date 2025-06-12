@@ -1,0 +1,4 @@
+\\10.100.16.117\c\Avago.ATF.Common.x64
+\\10.100.16.221\c\Avago.ATF.Common.x64
+\\10.100.16.204\c\Avago.ATF.Common.x64
+\\10.100.16.152\c\Avago.ATF.Common.x64

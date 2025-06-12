@@ -114,7 +114,6 @@ namespace TesterUtil
             }
             catch
             {
-
             }
 
             File.WriteAllText(this.LastClothoFile, this.Clotho_Path);
@@ -617,11 +616,6 @@ namespace TesterUtil
             }
         }
 
-        private void SetProgressLabel(string message, int progress)
-        {
-            this.lbl_message.Text = message + progress.ToString();
-        }
-
         private void btn_Inst_Click(object sender, EventArgs e)
         {
             this.btn_Inst.BackColor = Color.Yellow;
@@ -652,6 +646,102 @@ namespace TesterUtil
                     break;
                 }
             }
+        }
+
+        private Queue<Action> queue = new Queue<Action>();
+        private ManualResetEvent hasNewItems = new ManualResetEvent(false);
+
+        public void LogMessage(string row)
+        {
+            lock (queue)
+            {
+                queue.Enqueue(() => AsyncLogMessage(row));
+            }
+            hasNewItems.Set();
+        }
+
+        private void AsyncLogMessage(string row)
+        {
+            tbxLogs.InvokeIfRequired(() =>
+            {
+                tbxLogs.AppendText($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}]: {row}{Environment.NewLine}");
+                tbxLogs.ScrollToCaret();
+            });
+        }
+
+        private void btnRdpLogoff_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                string batFilePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "rdp_logout.bat");
+
+                if (!File.Exists(batFilePath))
+                {
+                    string batContent = "@echo off\r\n" +
+                        "for /f \"tokens=4 delims= \" %%G in ('tasklist /FI \"IMAGENAME eq tasklist.exe\" /NH') do SET RDP_SESSION=%%G\r\n" +
+                        "echo Current RDP Session ID: %RDP_SESSION%\r\n" +
+                        "tscon %RDP_SESSION% /dest:console";
+
+                    File.WriteAllText(batFilePath, batContent);
+                }
+
+                ProcessStartInfo psi = new ProcessStartInfo
+                {
+                    FileName = "cmd.exe",
+                    Arguments = $"/c \"{batFilePath}\"",
+                    Verb = "runas",
+                    UseShellExecute = true,
+                    CreateNoWindow = true
+                };
+
+                Process.Start(psi);
+            }
+            catch (Exception ex)
+            {
+                LogMessage($"Execution Failed, Error: {ex.Message}");
+            }
+        }
+
+        private void btnKillExcel_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                string batFilePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "kill_excel.bat");
+
+                if (!File.Exists(batFilePath))
+                {
+                    string batContent =
+                        "taskkill /f /im Avago.ATF.LogService.exe\r\n" +
+                        "taskkill /f /im Avago.ATF.UIs.exe\r\n" +
+                        "taskkill /f /im EXCEL.EXE";
+
+                    File.WriteAllText(batFilePath, batContent);
+                }
+
+                ProcessStartInfo psi = new ProcessStartInfo
+                {
+                    FileName = "cmd.exe",
+                    Arguments = $"/c \"{batFilePath}\"",
+                    Verb = "runas",
+                    UseShellExecute = true,
+                    CreateNoWindow = true
+                };
+
+                Process.Start(psi);
+            }
+            catch (Exception ex)
+            {
+                LogMessage($"Execution Failed, Error: {ex.Message}");
+            }
+        }
+    }
+
+    public static class Extension
+    {
+        public static void InvokeIfRequired(this Control control, Action action)
+        {
+            if (control.InvokeRequired) control.Invoke(action);
+            else action();
         }
     }
 }
