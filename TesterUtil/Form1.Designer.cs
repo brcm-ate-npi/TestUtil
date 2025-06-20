@@ -127,7 +127,7 @@
             this.groupBox1.Controls.Add(this.btn_Inst);
             this.groupBox1.Location = new System.Drawing.Point(12, 12);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(563, 459);
+            this.groupBox1.Size = new System.Drawing.Size(597, 459);
             this.groupBox1.TabIndex = 15;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Tester Utilization";
@@ -136,7 +136,7 @@
             // 
             this.flowLayoutPanel1.Controls.Add(this.btnRdpLogoff);
             this.flowLayoutPanel1.Controls.Add(this.btnKillExcel);
-            this.flowLayoutPanel1.Location = new System.Drawing.Point(581, 12);
+            this.flowLayoutPanel1.Location = new System.Drawing.Point(615, 12);
             this.flowLayoutPanel1.Name = "flowLayoutPanel1";
             this.flowLayoutPanel1.Size = new System.Drawing.Size(84, 459);
             this.flowLayoutPanel1.TabIndex = 16;
@@ -172,14 +172,14 @@
             this.tbxLogs.Location = new System.Drawing.Point(12, 477);
             this.tbxLogs.Multiline = true;
             this.tbxLogs.Name = "tbxLogs";
-            this.tbxLogs.Size = new System.Drawing.Size(653, 61);
+            this.tbxLogs.Size = new System.Drawing.Size(687, 61);
             this.tbxLogs.TabIndex = 17;
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(675, 550);
+            this.ClientSize = new System.Drawing.Size(709, 550);
             this.Controls.Add(this.tbxLogs);
             this.Controls.Add(this.flowLayoutPanel1);
             this.Controls.Add(this.groupBox1);

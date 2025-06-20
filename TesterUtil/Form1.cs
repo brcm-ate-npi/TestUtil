@@ -17,8 +17,9 @@ namespace TesterUtil
     public partial class Form1 : Form
     {
         private bool IsRun { get; set; } = false;
-        private string LastClothoFile = "C:\\Avago.ATF.Common.x64\\LastClothoFile.init";
-        private string Clotho_Path = "C:\\Avago.ATF.4.0.0\\System\\Avago.ATF.UIs.exe";
+        private string LastClothoInitInfoFile = @"C:\Avago.ATF.Common.x64\LastClothoInitInfo.json";
+        private string LastClothoFile = @"C:\Avago.ATF.Common.x64\LastClothoFile.init";
+        private string Clotho_Path = @"C:\Avago.ATF.4.0.0\System\Avago.ATF.UIs.exe";
         private string LatestInstalledClotho = "";
         private int LatestClotho = 0;
         private int ReadCurrentClotho = 0;
@@ -38,6 +39,7 @@ namespace TesterUtil
         private string ip_addr = "NA";
         private List<(string version, string fullpath)> ClothoList = new List<(string version, string fullpath)>();
         private int clothoIndex = 0;
+        private FileSystemWatcher fileWatcher;
 
         protected override void WndProc(ref Message m)
         {
@@ -71,6 +73,31 @@ namespace TesterUtil
                     this.KillExternalProgram(this.Clotho_Path, this.CloseLotFailWarning);
             };
         }
+
+        //private void SetupFileWatcher()
+        //{
+        //    try
+        //    {
+        //        fileWatcher = new FileSystemWatcher(basePath, "*.csv")
+        //        {
+        //            IncludeSubdirectories = true,
+        //            EnableRaisingEvents = true
+        //        };
+
+        //        fileWatcher.Changed += FileWatcher_Changed;
+        //        fileWatcher.Created += FileWatcher_Changed;
+        //        fileWatcher.Deleted += FileWatcher_Changed;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        LogMessage($"File watcher error: {ex.Message}");
+        //    }
+        //}
+
+        //private async void FileWatcher_Changed(object sender, FileSystemEventArgs e)
+        //{
+        //    LoadCsvFiles();
+        //}
 
         private void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e)
         {
@@ -108,15 +135,15 @@ namespace TesterUtil
                 var ClothoIni = Directory.GetFiles(Path.Combine(Path.GetDirectoryName(this.Clotho_Path), "Configuration"), "*.ini");
                 foreach (var file in ClothoIni)
                 {
-                    if (File.Exists(file))
-                        File.Delete(file);
+                    if (System.IO.File.Exists(file))
+                        System.IO.File.Delete(file);
                 }
             }
             catch
             {
             }
 
-            File.WriteAllText(this.LastClothoFile, this.Clotho_Path);
+            System.IO.File.WriteAllText(this.LastClothoFile, this.Clotho_Path);
             this.MoveDir(this.ResultDir, this.BackupDir);
             string directoryName = Path.GetDirectoryName(this.Clotho_Path);
             Directory.SetCurrentDirectory(directoryName);
@@ -226,23 +253,23 @@ namespace TesterUtil
                 );
                 string contents = "Tester ID,IP Address,Usage,Start Time,Stop Time,Usage Time (Minutes)\r\n";
                 string text4 = this.LocalFilePath + "TU_IP" + this.TesterIPAddress + ".csv";
-                bool flag14 = !File.Exists(text4);
+                bool flag14 = !System.IO.File.Exists(text4);
                 if (flag14)
                 {
-                    File.WriteAllText(text4, contents);
-                    File.AppendAllText(text4, this.Write2File + "\r\n");
+                    System.IO.File.WriteAllText(text4, contents);
+                    System.IO.File.AppendAllText(text4, this.Write2File + "\r\n");
                 }
                 else
                 {
                     try
                     {
-                        File.AppendAllText(text4, this.Write2File + "\r\n");
+                        System.IO.File.AppendAllText(text4, this.Write2File + "\r\n");
                     }
                     catch
                     {
                         string path = text4.Replace(".csv", "_temp.csv");
-                        File.WriteAllText(path, contents);
-                        File.AppendAllText(path, this.Write2File + "\r\n");
+                        System.IO.File.WriteAllText(path, contents);
+                        System.IO.File.AppendAllText(path, this.Write2File + "\r\n");
                     }
                 }
             }
@@ -264,23 +291,23 @@ namespace TesterUtil
                     );
                     string contents2 = "Tester ID,IP Address,Usage,Start Time,Stop Time,Usage Time (Minutes)\r\n";
                     string text5 = this.LocalFilePath + "TU_IP" + this.TesterIPAddress + ".csv";
-                    bool flag16 = !File.Exists(text5);
+                    bool flag16 = !System.IO.File.Exists(text5);
                     if (flag16)
                     {
-                        File.WriteAllText(text5, contents2);
-                        File.AppendAllText(text5, this.Write2File + "\r\n");
+                        System.IO.File.WriteAllText(text5, contents2);
+                        System.IO.File.AppendAllText(text5, this.Write2File + "\r\n");
                     }
                     else
                     {
                         try
                         {
-                            File.AppendAllText(text5, this.Write2File + "\r\n");
+                            System.IO.File.AppendAllText(text5, this.Write2File + "\r\n");
                         }
                         catch
                         {
                             string path2 = text5.Replace(".csv", "_temp.csv");
-                            File.WriteAllText(path2, contents2);
-                            File.AppendAllText(path2, this.Write2File + "\r\n");
+                            System.IO.File.WriteAllText(path2, contents2);
+                            System.IO.File.AppendAllText(path2, this.Write2File + "\r\n");
                         }
                     }
                 }
@@ -344,7 +371,7 @@ namespace TesterUtil
                     }
                 }
                 bool flag7 = false;
-                foreach (string text4 in File.ReadLines(text))
+                foreach (string text4 in System.IO.File.ReadLines(text))
                 {
                     bool flag8 = text4.Contains("IPAddress") && text4.Contains(text2);
                     if (flag8)
@@ -355,9 +382,9 @@ namespace TesterUtil
                 bool flag9 = flag7 && flag;
                 if (flag9)
                 {
-                    string text5 = File.ReadAllText(text);
+                    string text5 = System.IO.File.ReadAllText(text);
                     text5 = text5.Replace(text2, text3);
-                    File.WriteAllText(text, text5);
+                    System.IO.File.WriteAllText(text, text5);
                     result = text3;
                 }
             }
@@ -405,7 +432,7 @@ namespace TesterUtil
                 foreach (string text in files)
                 {
                     string fileName = Path.GetFileName(text);
-                    File.Move(text, destDir + fileName);
+                    System.IO.File.Move(text, destDir + fileName);
                 }
             }
             catch
@@ -527,7 +554,7 @@ namespace TesterUtil
             foreach (var dir in directories)
             {
                 string _clotho_exe = Path.Combine(dir, @"System\Avago.ATF.UIs.exe");
-                bool flag2 = File.Exists(_clotho_exe);
+                bool flag2 = System.IO.File.Exists(_clotho_exe);
                 if (flag2)
                 {
                     var _version = FileVersionInfo.GetVersionInfo(_clotho_exe).ProductVersion;
@@ -546,11 +573,11 @@ namespace TesterUtil
         private void CheckLastClotho()
         {
             string text2;
-            if (File.Exists(this.LastClothoFile))
+            if (System.IO.File.Exists(this.LastClothoFile))
             {
-                text2 = File.ReadAllLines(this.LastClothoFile)[0];
+                text2 = System.IO.File.ReadAllLines(this.LastClothoFile)[0];
 
-                if (!File.Exists(text2)) text2 = this.LatestInstalledClotho;
+                if (!System.IO.File.Exists(text2)) text2 = this.LatestInstalledClotho;
                 if (!text2.Contains("Avago.ATF.UIs.exe")) text2 = this.LatestInstalledClotho;
             }
             else
@@ -639,7 +666,7 @@ namespace TesterUtil
             for (int i = 0; i < 120; i++)
             {
                 Thread.Sleep(1000);
-                bool flag3 = File.Exists(text2);
+                bool flag3 = System.IO.File.Exists(text2);
                 if (flag3)
                 {
                     this.btn_Inst.BackColor = Color.Green;
@@ -675,14 +702,14 @@ namespace TesterUtil
             {
                 string batFilePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "rdp_logout.bat");
 
-                if (!File.Exists(batFilePath))
+                if (!System.IO.File.Exists(batFilePath))
                 {
                     string batContent = "@echo off\r\n" +
                         "for /f \"tokens=4 delims= \" %%G in ('tasklist /FI \"IMAGENAME eq tasklist.exe\" /NH') do SET RDP_SESSION=%%G\r\n" +
                         "echo Current RDP Session ID: %RDP_SESSION%\r\n" +
                         "tscon %RDP_SESSION% /dest:console";
 
-                    File.WriteAllText(batFilePath, batContent);
+                    System.IO.File.WriteAllText(batFilePath, batContent);
                 }
 
                 ProcessStartInfo psi = new ProcessStartInfo
@@ -708,14 +735,14 @@ namespace TesterUtil
             {
                 string batFilePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "kill_excel.bat");
 
-                if (!File.Exists(batFilePath))
+                if (!System.IO.File.Exists(batFilePath))
                 {
                     string batContent =
                         "taskkill /f /im Avago.ATF.LogService.exe\r\n" +
                         "taskkill /f /im Avago.ATF.UIs.exe\r\n" +
                         "taskkill /f /im EXCEL.EXE";
 
-                    File.WriteAllText(batFilePath, batContent);
+                    System.IO.File.WriteAllText(batFilePath, batContent);
                 }
 
                 ProcessStartInfo psi = new ProcessStartInfo
