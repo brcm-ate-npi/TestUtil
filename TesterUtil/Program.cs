@@ -81,7 +81,7 @@ namespace TesterUtil
         [STAThread]
         private static void Main()
         {
-            CreateShortcutIfMissing();
+            //CreateShortcutIfMissing();
             STR_FORMNAME = $"WSD Tester Utilization v.{GetClickOnceVersion()} (Auto IP Address Update)";
 
             bool isNewInstance;
