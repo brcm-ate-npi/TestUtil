@@ -426,6 +426,9 @@ namespace TesterUtil
 
         private void MoveDir(string srcDir, string destDir)
         {
+            Directory.CreateDirectory(srcDir);
+            Directory.CreateDirectory(destDir);
+
             string[] files = Directory.GetFiles(srcDir);
             try
             {

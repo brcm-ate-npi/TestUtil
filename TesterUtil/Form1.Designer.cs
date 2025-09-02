@@ -113,7 +113,7 @@
             this.buttonPanel.AutoScroll = true;
             this.buttonPanel.Location = new System.Drawing.Point(285, 180);
             this.buttonPanel.Name = "buttonPanel";
-            this.buttonPanel.Size = new System.Drawing.Size(270, 239);
+            this.buttonPanel.Size = new System.Drawing.Size(306, 239);
             this.buttonPanel.TabIndex = 14;
             // 
             // groupBox1
