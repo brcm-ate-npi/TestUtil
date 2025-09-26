@@ -813,18 +813,20 @@ namespace TesterUtil
 
                 if (!System.IO.File.Exists(batFilePath))
                 {
+                    string tsconPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.System), "tscon.exe");
+
                     string batContent = "@echo off\r\n" +
                         "for /f \"tokens=4 delims= \" %%G in ('tasklist /FI \"IMAGENAME eq tasklist.exe\" /NH') do SET RDP_SESSION=%%G\r\n" +
                         "echo Current RDP Session ID: %RDP_SESSION%\r\n" +
-                        "tscon %RDP_SESSION% /dest:console";
+                        $"\"{tsconPath}\" %RDP_SESSION% /dest:console";
 
                     System.IO.File.WriteAllText(batFilePath, batContent);
                 }
 
                 ProcessStartInfo psi = new ProcessStartInfo
                 {
-                    FileName = "cmd.exe",
-                    Arguments = $"/c \"{batFilePath}\"",
+                    FileName = batFilePath,
+                    //Arguments = $"/c \"{batFilePath}\"",
                     Verb = "runas",
                     UseShellExecute = true,
                     CreateNoWindow = true
