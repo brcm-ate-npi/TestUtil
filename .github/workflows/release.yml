@@ -34,7 +34,7 @@ jobs:
       shell: pwsh
 
     - name: 7. Build the application
-      run: msbuild TesterUtil.sln /p:Configuration=Release
+      run: msbuild TesterUtil.sln /p:Configuration=Release /p:PlatformTarget=x64 /p:Prefer32Bit=false /p:OutputPath=bin\Release\
 
     - name: 8. Create NuGet Package with correct version
       run: nuget pack TesterUtil.nuspec -Version ${{ steps.get_version.outputs.version }}
