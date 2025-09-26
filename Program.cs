@@ -15,7 +15,7 @@ namespace TesterUtil
         private static Mutex mutex;
         public const int SW_RESTORE = 9;
 
-        public static readonly Version AppVersion = new Version(1, 0, 20, 0);
+        public static readonly Version AppVersion = new Version(1, 0, 21, 0);
         public static string STR_FORMNAME = "";
 
         [DllImport("user32.dll")]
