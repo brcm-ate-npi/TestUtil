@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+  <metadata>
+    <!-- The ID should be the same as the one in App.config -->
+    <id>TesterUtil</id>
+
+    <!-- This is the version you will manually update for each new release -->
+    <version>1.0.0</version>
+
+    <title>NPI TesterUtil</title>
+    <authors>Seoul NPI</authors>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>NPI TesterUtil</description>
+    <readme>README.md</readme>
+    <dependencies>
+      <group targetFramework=".NETFramework4.7.2" />
+    </dependencies>
+  </metadata>
+  <files>
+    <file src="README.md" target="" />
+    <!-- It grabs everything from the Release build output directory inside the project folder. -->
+    <file src="bin\Release\*.exe" target="lib\net472\" />
+    <file src="bin\Release\*.dll" target="lib\net472\" />
+    <file src="bin\Release\*.config" target="lib\net472\" />
+    <file src="bin\Release\*.xml" target="lib\net472\" />
+    <file src="bin\Release\*.md" target="lib\net472\" />
+  </files>
+</package>

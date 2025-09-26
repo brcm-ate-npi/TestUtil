@@ -1,4 +1,5 @@
 ﻿using IWshRuntimeLibrary;
+using Squirrel;
 using System;
 using System.Deployment.Application;
 using System.IO;
@@ -14,7 +15,7 @@ namespace TesterUtil
         private static Mutex mutex;
         public const int SW_RESTORE = 9;
 
-        public static readonly Version AppVersion = new Version(1, 0, 9, 0);
+        public static readonly Version AppVersion = new Version(1, 0, 20, 0);
         public static string STR_FORMNAME = "";
 
         [DllImport("user32.dll")]
@@ -82,13 +83,15 @@ namespace TesterUtil
         private static void Main()
         {
             //CreateShortcutIfMissing();
-            STR_FORMNAME = $"WSD Tester Utilization v.{GetClickOnceVersion()} (Auto IP Address Update)";
+            STR_FORMNAME = $"WSD Tester Utilization v.{AppVersion.ToString()} (Auto IP Address Update)";
 
             bool isNewInstance;
             mutex = new Mutex(true, "UniqueProgramMutexName", out isNewInstance);
 
             if (isNewInstance)
             {
+                SquirrelAwareApp.HandleEvents(onAppUpdate: Form1.OnAppUpdate, onAppUninstall: Form1.OnAppUninstall, onInitialInstall: Form1.OnInitialInstall);
+
                 Application.EnableVisualStyles();
                 Application.SetCompatibleTextRenderingDefault(false);
 

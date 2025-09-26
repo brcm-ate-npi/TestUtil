@@ -1,11 +1,14 @@
-﻿using System;
+﻿using Squirrel;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Configuration;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
@@ -66,14 +69,106 @@ namespace TesterUtil
             CheckLastClotho();
             this.Display_Clotho_Version();
             this.MoveDir(this.ResultDir, this.BackupDir);
+            UpdateIpAddr();
 
             Application.ApplicationExit += (s, e) =>
             {
                 if (IsRun)
                     this.KillExternalProgram(this.Clotho_Path, this.CloseLotFailWarning);
             };
+
+            this.Load += Form1_Load;
         }
 
+        #region AutoUpdate
+
+        private const ShortcutLocation DefaultLocations = ShortcutLocation.StartMenu | ShortcutLocation.Desktop;
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+#if !DEBUG
+            Task.Run(async () => await UpdateApp());
+#endif
+        }
+
+        private void checkForUpdatesToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+#if !DEBUG
+            // Check for Squirrel Updates
+            var t = UpdateApp();
+#endif
+        }
+
+        public async Task UpdateApp()
+        {
+            var updatePath = ConfigurationManager.AppSettings["UpdatePathFolder"];
+            var packageId = ConfigurationManager.AppSettings["PackageID"];
+
+            try
+            {
+                using (var mgr = new UpdateManager(updatePath, packageId))
+                {
+                    var updates = await mgr.CheckForUpdate();
+                    if (updates.ReleasesToApply.Any())
+                    {
+                        var lastVersion = updates.ReleasesToApply.OrderBy(x => x.Version).Last();
+
+                        await mgr.DownloadReleases(new[] { lastVersion });
+
+                        await mgr.ApplyReleases(updates);
+
+                        await mgr.UpdateApp();
+
+                        MessageBox.Show("The application has been updated - please close and restart.");
+                    }
+                    else
+                    {
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Exception during update " + ex.Message);
+            }
+        }
+
+        public static void OnAppUpdate(Version version)
+        {
+            // Could use this to do stuff here too.
+        }
+
+        public static void OnInitialInstall(Version version)
+        {
+            var exePath = Assembly.GetEntryAssembly().Location;
+            string appName = Path.GetFileName(exePath);
+
+            var updatePath = ConfigurationManager.AppSettings["UpdatePathFolder"];
+            var packageId = ConfigurationManager.AppSettings["PackageID"];
+
+            using (var mgr = new UpdateManager(updatePath, packageId))
+            {
+
+                // Create Desktop and Start Menu shortcuts
+                mgr.CreateShortcutsForExecutable(appName, DefaultLocations, false);
+            }
+        }
+
+        public static void OnAppUninstall(Version version)
+        {
+            var exePath = Assembly.GetEntryAssembly().Location;
+            string appName = Path.GetFileName(exePath);
+
+            var updatePath = ConfigurationManager.AppSettings["UpdatePathFolder"];
+            var packageId = ConfigurationManager.AppSettings["PackageID"];
+
+            using (var mgr = new UpdateManager(updatePath, packageId))
+            {
+                // Remove Desktop and Start Menu shortcuts
+                mgr.RemoveShortcutsForExecutable(appName, DefaultLocations);
+            }
+        }
+
+        #endregion
         //private void SetupFileWatcher()
         //{
         //    try
@@ -148,15 +243,23 @@ namespace TesterUtil
             string directoryName = Path.GetDirectoryName(this.Clotho_Path);
             Directory.SetCurrentDirectory(directoryName);
 
-            this.ip_addr = this.Auto_IpAddr_Update();
-            this.lbl_ipaddr.Text = "Tester IP Address = " + this.ip_addr.ToString();
-            this.lbl_ipaddr.BackColor = Color.LightBlue;
+            UpdateIpAddr();
 
             await this.LaunchExternalProgram(this.Clotho_Path);
             base.TopMost = false;
             this.Util_Logger();
             this.KillExternalProgram(this.Clotho_Path, this.CloseLotFailWarning);
             base.WindowState = FormWindowState.Normal;
+        }
+
+        public void UpdateIpAddr()
+        {
+            this.ip_addr = this.Auto_IpAddr_Update();
+            this.lbl_ipaddr.InvokeIfRequired(() =>
+            {
+                lbl_ipaddr.Text = "Tester IP Address = " + this.ip_addr.ToString();
+                lbl_ipaddr.BackColor = Color.LightBlue;
+            });
         }
 
         private void btn_PM_Click(object sender, EventArgs e)
@@ -388,7 +491,10 @@ namespace TesterUtil
                     result = text3;
                 }
             }
-            catch (Exception ex) { MessageBox.Show(ex.Message); }
+            catch (Exception ex)
+            {
+                result = ex.Message;
+            }
             return result;
         }
 

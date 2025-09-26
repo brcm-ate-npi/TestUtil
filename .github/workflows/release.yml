@@ -1,0 +1,73 @@
+name: Release TesterUtil
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+    outputs:
+      version: ${{ steps.get_version.outputs.version }}
+
+    steps:
+    - name: 1. Checkout code
+      uses: actions/checkout@v4
+
+    - name: 2. Setup MSBuild
+      uses: microsoft/setup-msbuild@v1.1
+
+    - name: 3. Setup NuGet
+      uses: NuGet/setup-nuget@v1
+      with:
+        nuget-version: '5.x'
+
+    - name: 5. Restore NuGet packages
+      run: nuget restore TesterUtil.sln
+
+    - name: 6. Extract Version from Tag
+      id: get_version
+      run: |
+        $version = "${{ github.ref_name }}" -replace 'v',''
+        "version=$version" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
+      shell: pwsh
+
+    - name: 7. Build the application
+      run: msbuild TesterUtil.sln /p:Configuration=Release
+
+    - name: 8. Create NuGet Package with correct version
+      run: nuget pack TesterUtil.nuspec -Version ${{ steps.get_version.outputs.version }}
+
+    - name: 9. Create Squirrel Release (Releasify)
+      run: .\tools\Squirrel.Windows-1.9.1\Squirrel.exe --releasify TesterUtil.${{ steps.get_version.outputs.version }}.nupkg
+
+    - name: 10. Upload Release Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: ClothoMaster-release
+        path: .\Releases
+
+    - name: 11. Create GitHub Release
+      uses: softprops/action-gh-release@v1
+      with:
+        files: Releases/*
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  deploy-linux:
+    runs-on: self-hosted-rocky # This targets the runner with the label you created
+    needs: build-windows # This job runs only after the build job is successful
+  
+    steps:
+    - name: 1. Download Release Artifact
+      uses: actions/download-artifact@v4
+      with:
+        name: ClothoMaster-release
+
+    - name: 2. Deploy to Nginx Directory
+      run: |
+        echo "Deploying files to Nginx web root..."
+        cp -r ./* /var/www/clothoMaster-releases/
+        echo "Deployment complete."
+      shell: bash

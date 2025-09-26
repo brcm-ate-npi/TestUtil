@@ -6,11 +6,11 @@ using System.Runtime.InteropServices;
 using System.Runtime.Versioning;
 
 [assembly: AssemblyVersion("1.0.4.0")]
-[assembly: AssemblyTitle("TesterUtil")]
+[assembly: AssemblyTitle("ClothoMaster")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("WSD")]
-[assembly: AssemblyProduct("TesterUtil")]
+[assembly: AssemblyProduct("ClothoMaster")]
 [assembly: AssemblyCopyright("Copyright © WSD TesterUtil 2023")]
 [assembly: AssemblyTrademark("")]
 [assembly: ComVisible(false)]
