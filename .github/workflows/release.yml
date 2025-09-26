@@ -45,7 +45,7 @@ jobs:
     - name: 10. Upload Release Artifact
       uses: actions/upload-artifact@v4
       with:
-        name: ClothoMaster-release
+        name: TesterUtil-release
         path: .\Releases
 
     - name: 11. Create GitHub Release
@@ -63,7 +63,7 @@ jobs:
     - name: 1. Download Release Artifact
       uses: actions/download-artifact@v4
       with:
-        name: ClothoMaster-release
+        name: TesterUtil-release
 
     - name: 2. Deploy to Nginx Directory
       run: |
