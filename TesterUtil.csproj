@@ -142,6 +142,7 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <None Include=".github\workflows\release.yml" />
     <None Include="app.config" />
     <None Include="app.manifest" />
     <None Include="jay\Clotho Master.lnk">
@@ -154,8 +155,10 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
+    <None Include="TesterUtil.nuspec" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="README.md" />
     <None Include="Resources\TesterUtil.ico" />
   </ItemGroup>
   <ItemGroup>
@@ -200,6 +203,9 @@
     <PackageReference Include="squirrel.windows">
       <Version>2.0.1</Version>
     </PackageReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="tools\Squirrel.Windows-1.9.1\Squirrel.exe" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
