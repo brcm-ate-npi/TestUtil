@@ -19,10 +19,10 @@
   <files>
     <file src="README.md" target="" />
     <!-- It grabs everything from the Release build output directory inside the project folder. -->
-    <file src="bin\Release\*.exe" target="lib\net472\" />
-    <file src="bin\Release\*.dll" target="lib\net472\" />
-    <file src="bin\Release\*.config" target="lib\net472\" />
-    <file src="bin\Release\*.xml" target="lib\net472\" />
-    <file src="bin\Release\*.md" target="lib\net472\" />
+    <file src="TesterUtil\bin\Release\*.exe" target="lib\net472\" />
+    <file src="TesterUtil\bin\Release\*.dll" target="lib\net472\" />
+    <file src="TesterUtil\bin\Release\*.config" target="lib\net472\" />
+    <file src="TesterUtil\bin\Release\*.xml" target="lib\net472\" />
+    <file src="TesterUtil\bin\Release\*.md" target="lib\net472\" />
   </files>
 </package>
